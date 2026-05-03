@@ -6,6 +6,7 @@ import { Construct } from 'constructs';
 export interface ApiConstructProps {
   userPool: cognito.IUserPool;
   invokeFunction: lambda.IFunction;
+  auth: 'cognito' | 'none';
 }
 
 export class ApiConstruct extends Construct {
@@ -13,10 +14,6 @@ export class ApiConstruct extends Construct {
 
   constructor(scope: Construct, id: string, props: ApiConstructProps) {
     super(scope, id);
-
-    const authorizer = new apigateway.CognitoUserPoolsAuthorizer(this, 'Authorizer', {
-      cognitoUserPools: [props.userPool],
-    });
 
     this.api = new apigateway.RestApi(this, 'Api', {
       deployOptions: {
@@ -31,10 +28,27 @@ export class ApiConstruct extends Construct {
     });
 
     const invoke = this.api.root.addResource('invoke');
-    invoke.addMethod('POST', new apigateway.LambdaIntegration(props.invokeFunction), {
-      authorizationType: apigateway.AuthorizationType.COGNITO,
-      authorizer,
-    });
+    const authorizer =
+      props.auth === 'cognito'
+        ? new apigateway.CognitoUserPoolsAuthorizer(this, 'Authorizer', {
+            cognitoUserPools: [props.userPool],
+          })
+        : undefined;
+
+    invoke.addMethod(
+      'POST',
+      new apigateway.LambdaIntegration(props.invokeFunction, {
+        contentHandling: apigateway.ContentHandling.CONVERT_TO_BINARY,
+      }),
+      props.auth === 'cognito'
+        ? {
+            authorizationType: apigateway.AuthorizationType.COGNITO,
+            authorizer,
+          }
+        : {
+            authorizationType: apigateway.AuthorizationType.NONE,
+          },
+    );
 
     this.api.addGatewayResponse('Default4xx', {
       type: apigateway.ResponseType.DEFAULT_4XX,

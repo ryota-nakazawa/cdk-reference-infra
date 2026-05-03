@@ -37,8 +37,9 @@ export const appManifestSchema = z.object({
   api: z
     .object({
       invokePath: z.string().default('/invoke'),
+      auth: z.enum(['cognito', 'none']).default('cognito'),
     })
-    .default({ invokePath: '/invoke' }),
+    .default({ invokePath: '/invoke', auth: 'cognito' }),
   permissions: z
     .object({
       bedrock: z.boolean().default(false),

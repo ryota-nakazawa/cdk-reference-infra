@@ -45,6 +45,9 @@ export class RuntimeLambdaConstruct extends Construct {
       runtime: lambda.Runtime.NODEJS_22_X,
       timeout: Duration.seconds(props.timeoutSeconds),
       memorySize: props.memorySizeMb,
+      bundling: {
+        externalModules: [],
+      },
       logGroup: new logs.LogGroup(this, 'FunctionLogGroup', {
         logGroupName: `/aws/lambda/${props.appName}-invoke`,
         retention: props.logRetentionDays as logs.RetentionDays,

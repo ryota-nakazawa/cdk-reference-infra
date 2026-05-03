@@ -8,8 +8,11 @@
   "scripts": {
     "cdk:install": "npm install",
     "cdk:build": "npm --workspace @genai-app-infra-template/cdk run build",
-    "cdk:synth": "npm --workspace @genai-app-infra-template/cdk run synth",
-    "cdk:deploy": "npm --workspace @genai-app-infra-template/cdk run deploy"
+    "cdk:synth": "npm --workspace @genai-app-infra-template/cdk run synth --",
+    "cdk:deploy": "npm --workspace @genai-app-infra-template/cdk run deploy --"
+  },
+  "dependencies": {
+    "@aws-sdk/client-secrets-manager": "^3.1029.0"
   },
   "devDependencies": {
     "esbuild": "^0.28.0"

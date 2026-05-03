@@ -135,9 +135,26 @@ export class GenAiAppStack extends cdk.Stack {
       throw new Error(`Unsupported or incomplete app manifest for ${input.appName}`);
     }
 
+    let api: ApiConstruct | undefined;
+
+    if (invokeFunction) {
+      api = new ApiConstruct(this, 'Api', {
+        userPool: auth.userPool,
+        invokeFunction,
+        auth: manifest.api.auth,
+      });
+
+      new ObservabilityConstruct(this, 'Observability', {
+        appName: input.appName,
+        invokeFunction,
+        queue: async?.queue,
+      });
+    }
+
     const web = new WebConstruct(this, 'Web', {
       encryptionKey: security.key,
       responseHeadersPolicy: security.responseHeadersPolicy,
+      api: api?.api,
     });
 
     if (manifest.frontend) {
@@ -160,18 +177,7 @@ export class GenAiAppStack extends cdk.Stack {
       }
     }
 
-    if (invokeFunction) {
-      const api = new ApiConstruct(this, 'Api', {
-        userPool: auth.userPool,
-        invokeFunction,
-      });
-
-      new ObservabilityConstruct(this, 'Observability', {
-        appName: input.appName,
-        invokeFunction,
-        queue: async?.queue,
-      });
-
+    if (api) {
       new cdk.CfnOutput(this, 'ApiEndpoint', { value: api.api.url });
     }
 

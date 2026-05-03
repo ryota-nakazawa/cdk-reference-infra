@@ -1,0 +1,31 @@
+{
+  "name": "example-lambda-app",
+  "type": "lambda",
+  "description": "Minimal Lambda-backed GenAI app example for the enterprise CDK template.",
+  "frontend": {
+    "path": "frontend",
+    "buildCommand": "npm ci && npm run build",
+    "outputDir": "dist"
+  },
+  "backend": {
+    "path": "backend",
+    "entry": "src/handler.ts",
+    "handler": "handler",
+    "runtime": "nodejs22.x",
+    "timeoutSeconds": 60,
+    "memorySizeMb": 512,
+    "environment": {
+      "MODEL_PROVIDER": "bedrock"
+    }
+  },
+  "api": {
+    "invokePath": "/invoke"
+  },
+  "permissions": {
+    "bedrock": true,
+    "dynamodb": true,
+    "s3": true,
+    "secrets": true,
+    "sqs": true
+  }
+}

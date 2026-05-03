@@ -1,0 +1,26 @@
+{
+  "name": "@genai-app-infra-template/cdk",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "cdk": "cdk",
+    "synth": "cdk synth",
+    "deploy": "cdk deploy --all",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "aws-cdk-lib": "^2.248.0",
+    "constructs": "^10.6.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.161",
+    "@types/node": "^25.5.2",
+    "aws-cdk": "^2.1118.0",
+    "esbuild": "^0.28.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.2"
+  }
+}

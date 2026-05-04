@@ -148,6 +148,15 @@ npm run cdk:deploy -- \
   -c rateLimitPer5Min=300
 ```
 
+Rate Limitの動作確認時は、一時的に低い値を指定できます。検証後は実運用向けの値に戻してください。
+
+```bash
+npm run cdk:deploy -- \
+  -c appName=my-ai-app \
+  -c enableWaf=true \
+  -c rateLimitPer5Min=10
+```
+
 任意で国制限やIP制限も指定できます。
 
 ```bash

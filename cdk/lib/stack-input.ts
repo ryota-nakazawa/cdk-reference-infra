@@ -35,7 +35,7 @@ export const stackInputSchema = z.object({
   enableWaf: z.boolean().default(false),
   enableSqs: z.boolean().default(true),
   allowedCountryCodes: z.array(z.string()).default([]),
-  rateLimitPer5Min: z.number().min(100).default(300),
+  rateLimitPer5Min: z.number().min(10).default(300),
   enableBudget: z.boolean().default(false),
   monthlyBudgetLimitUsd: z.number().min(1).default(10),
   budgetAlertEmail: z.string().email().optional(),

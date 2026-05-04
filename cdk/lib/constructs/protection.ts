@@ -96,7 +96,7 @@ export class ProtectionConstruct extends Construct {
             scopeDownStatement: {
               byteMatchStatement: {
                 fieldToMatch: { uriPath: {} },
-                positionalConstraint: 'EXACTLY',
+                positionalConstraint: 'ENDS_WITH',
                 searchString: '/invoke',
                 textTransformations: [{ priority: 0, type: 'NONE' }],
               },

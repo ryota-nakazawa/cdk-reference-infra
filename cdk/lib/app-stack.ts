@@ -7,8 +7,10 @@ import { AppManifest, loadAppManifest, resolveAppPath } from './app-manifest';
 import { ApiConstruct } from './constructs/api';
 import { AsyncConstruct } from './constructs/async';
 import { AuthConstruct } from './constructs/auth';
+import { CostConstruct } from './constructs/cost';
 import { DataConstruct } from './constructs/data';
 import { ObservabilityConstruct } from './constructs/observability';
+import { ProtectionConstruct } from './constructs/protection';
 import { RuntimeEcsConstruct } from './constructs/runtime-ecs';
 import { RuntimeLambdaConstruct } from './constructs/runtime-lambda';
 import { SecretsConstruct } from './constructs/secrets';
@@ -148,6 +150,30 @@ export class GenAiAppStack extends cdk.Stack {
         appName: input.appName,
         invokeFunction,
         queue: async?.queue,
+      });
+
+      if (input.enableWaf) {
+        new ProtectionConstruct(this, 'Protection', {
+          appName: input.appName,
+          appEnv: input.appEnv,
+          api: api.api,
+          allowedIpV4AddressRanges: input.allowedIpV4AddressRanges,
+          allowedIpV6AddressRanges: input.allowedIpV6AddressRanges,
+          allowedCountryCodes: input.allowedCountryCodes,
+          rateLimitPer5Min: input.rateLimitPer5Min,
+        });
+      }
+    }
+
+    if (input.enableBudget) {
+      if (!input.budgetAlertEmail) {
+        throw new Error('budgetAlertEmail is required when enableBudget is true.');
+      }
+      new CostConstruct(this, 'Cost', {
+        appName: input.appName,
+        appEnv: input.appEnv,
+        monthlyBudgetLimitUsd: input.monthlyBudgetLimitUsd,
+        alertEmail: input.budgetAlertEmail,
       });
     }
 

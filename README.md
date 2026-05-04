@@ -45,7 +45,8 @@ Files: S3
 Secrets: Secrets Manager
 Async: SQS + DLQ
 Logs/Ops: CloudWatch
-Security: KMS + security headers + least-privilege IAM
+Security: KMS + WAF optional + rate limit optional + security headers + least-privilege IAM
+Cost: AWS Budgets optional
 ```
 
 ## 源内CDKから参考にしている点
@@ -136,6 +137,39 @@ npm run cdk:deploy -- -c appName=example-lambda-app -c appEnv=dev
 npm run cdk:deploy -- -c appName=my-ai-app -c appEnv=prod -c removalPolicy=RETAIN
 ```
 
+## WAF / Rate Limit / Cost Alarm
+
+API Gateway にRegional WAFを関連付け、`/invoke` へのIP単位レート制限、AWS Managed Rules、任意のIP/国制限を有効化できます。
+
+```bash
+npm run cdk:deploy -- \
+  -c appName=my-ai-app \
+  -c enableWaf=true \
+  -c rateLimitPer5Min=300
+```
+
+任意で国制限やIP制限も指定できます。
+
+```bash
+npm run cdk:deploy -- \
+  -c appName=my-ai-app \
+  -c enableWaf=true \
+  -c allowedCountryCodes='["JP"]' \
+  -c allowedIpV4AddressRanges='["203.0.113.10/32"]'
+```
+
+AWS Budgets による月額コスト通知も作成できます。
+
+```bash
+npm run cdk:deploy -- \
+  -c appName=my-ai-app \
+  -c enableBudget=true \
+  -c monthlyBudgetLimitUsd=10 \
+  -c budgetAlertEmail=you@example.com
+```
+
+`enableBudget=true` の場合、`budgetAlertEmail` は必須です。
+
 ## 現在の対応範囲
 
 対応済み:
@@ -149,13 +183,16 @@ npm run cdk:deploy -- -c appName=my-ai-app -c appEnv=prod -c removalPolicy=RETAI
 - Secrets Manager
 - SQS
 - CloudWatch alarms
+- Regional WAF for API Gateway
+- `/invoke` rate limit
+- AWS Budgets cost notifications
 - KMS encryption
 
 拡張枠:
 
 - ECS/Fargate runtime
 - SAML
-- WAF
+- CloudFront global WAF stack
 - Step Functions
 - Bedrock Knowledge Bases / OpenSearch
 - multi-tenant app registry

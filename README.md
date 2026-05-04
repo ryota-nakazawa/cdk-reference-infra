@@ -139,7 +139,9 @@ npm run cdk:deploy -- -c appName=my-ai-app -c appEnv=prod -c removalPolicy=RETAI
 
 ## WAF / Rate Limit / Cost Alarm
 
-API Gateway にRegional WAFを関連付け、`/invoke` へのIP単位レート制限、AWS Managed Rules、任意のIP/国制限を有効化できます。
+API Gateway にRegional WAFを関連付け、標準実行APIへのIP単位レート制限、AWS Managed Rules、任意のIP/国制限を有効化できます。
+
+このテンプレートでは、アプリからLambdaバックエンドを呼び出す共通入口として `/invoke` をデフォルトで作成します。これは今回のサンプルアプリ固有のAPIではなく、CDKテンプレート側の標準APIパスです。アプリ固有の業務APIを増やす場合は、manifest と API Construct を拡張して個別パスを追加する想定です。
 
 ```bash
 npm run cdk:deploy -- \
@@ -193,7 +195,7 @@ npm run cdk:deploy -- \
 - SQS
 - CloudWatch alarms
 - Regional WAF for API Gateway
-- `/invoke` rate limit
+- standard runtime API rate limit
 - AWS Budgets cost notifications
 - KMS encryption
 

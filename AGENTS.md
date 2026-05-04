@@ -14,9 +14,11 @@ The goal is to let developers place an AI application under `apps/`, then adapt 
 - Use ECS only when Lambda limits are unsuitable.
 - Use Cognito for authentication.
 - Treat SAML as an optional enterprise extension.
+- Prefer Amazon Bedrock for LLM access unless the target app explicitly requires another provider.
+- Use Secrets Manager for external LLM API keys and credentials, not for Bedrock model access.
 - Use DynamoDB for app metadata, chat history, job state, and lightweight business data.
 - Use S3 for frontend hosting, uploaded files, and generated artifacts.
-- Use Secrets Manager for API keys and credentials.
+- Use Secrets Manager for external API keys and credentials.
 - Use SQS for asynchronous jobs.
 - Use CloudWatch for logs, metrics, and alarms.
 - Use KMS encryption for persisted data.
@@ -50,6 +52,7 @@ The manifest describes:
 - backend path and entrypoint
 - required AWS capabilities
 - required environment variables
+- LLM provider choice, preferring Bedrock when requirements allow
 
 Codex should update or create this file when adapting an app.
 
@@ -63,6 +66,8 @@ When asked to "put this app on the CDK template":
 4. Connect the app to the appropriate CDK adapter.
 5. Add required environment variables to the CDK environment config.
 6. Add only necessary IAM permissions.
+   - Prefer `permissions.bedrock=true` for AWS-native LLM workloads.
+   - Set `permissions.secrets=true` only when the app reads external API keys or credentials.
 7. Update deployment scripts if needed.
 8. Update README with app-specific deployment instructions.
 9. Run typecheck/tests/build where available.

@@ -6,6 +6,8 @@ Apps under this directory should remain portable.
 
 Do not couple app business logic directly to CDK internals.
 
+For enterprise GenAI apps, prefer Amazon Bedrock as the default LLM provider when the app requirements do not mandate OpenAI, Gemini, or another external API. Use Secrets Manager only for external provider API keys or other credentials.
+
 Each app should expose one of the supported backend forms:
 
 - Lambda handler

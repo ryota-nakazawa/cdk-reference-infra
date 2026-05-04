@@ -15,7 +15,8 @@
     "timeoutSeconds": 60,
     "memorySizeMb": 512,
     "environment": {
-      "MODEL_PROVIDER": "bedrock"
+      "MODEL_PROVIDER": "bedrock",
+      "BEDROCK_MODEL_ID": "replace-with-bedrock-model-id"
     }
   },
   "api": {
@@ -25,7 +26,7 @@
     "bedrock": true,
     "dynamodb": true,
     "s3": true,
-    "secrets": true,
+    "secrets": false,
     "sqs": true
   }
 }

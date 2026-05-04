@@ -9,6 +9,8 @@
 - Do not let reusable constructs read app files directly. App file discovery belongs in the AppAdapter layer.
 - App-specific deployment behavior should be driven by `app.manifest.json`.
 - Prefer AWS managed services over custom operational code.
+- Prefer Bedrock IAM permissions for LLM access when the app can use AWS-native models.
+- Grant Secrets Manager read permissions only for apps that need external API keys or credentials.
 - Include CloudWatch logs for all Lambda functions.
 - Add alarms for critical queues, Lambda errors, and API 5xx where practical.
 

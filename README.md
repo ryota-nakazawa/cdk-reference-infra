@@ -40,14 +40,26 @@ Frontend: S3 + CloudFront
 Auth: Cognito User Pool + Identity Pool
 Runtime: API Gateway + Lambda
 ECS: future extension for heavy workloads
+LLM: Amazon Bedrock first, external LLM APIs optional
 DB: DynamoDB
 Files: S3
-Secrets: Secrets Manager
+Secrets: Secrets Manager for external API keys and credentials
 Async: SQS + DLQ
 Logs/Ops: CloudWatch
 Security: KMS + WAF optional + rate limit optional + security headers + least-privilege IAM
 Cost: AWS Budgets optional
 ```
+
+## LLMプロバイダ方針
+
+to B 向けの標準テンプレートとしては、AWS内のIAM、監査、ログ、コスト管理と統合しやすい Amazon Bedrock を第一候補にします。
+
+```text
+Default: Amazon Bedrock
+Optional: OpenAI / Gemini / Anthropic API などの外部LLM
+```
+
+Bedrockを使うアプリでは、Lambdaに `bedrock:InvokeModel` / `bedrock:InvokeModelWithResponseStream` 権限を付与します。外部LLMを使う場合は、APIキーをSecrets Managerに保存し、Lambdaには必要なSecretの読み取り権限だけを付与します。
 
 ## 源内CDKから参考にしている点
 
@@ -82,14 +94,15 @@ Cost: AWS Budgets optional
     "timeoutSeconds": 60,
     "memorySizeMb": 512,
     "environment": {
-      "MODEL_PROVIDER": "bedrock"
+      "MODEL_PROVIDER": "bedrock",
+      "BEDROCK_MODEL_ID": "replace-with-bedrock-model-id"
     }
   },
   "permissions": {
     "bedrock": true,
     "dynamodb": true,
     "s3": true,
-    "secrets": true,
+    "secrets": false,
     "sqs": true
   }
 }
@@ -105,7 +118,9 @@ apps/my-ai-app を解析して、このCDKテンプレートに載せてくだ�
 - Lambdaで動く場合は RuntimeLambdaConstruct に接続する
 - Dockerfileがある場合は ECS拡張候補として整理する
 - 必要な環境変数を manifest に集約する
+- 特に指定がなければ Bedrock を第一候補にする
 - Bedrock/S3/DynamoDB/Secrets/SQS の権限は必要最小限にする
+- OpenAI/Gemini等の外部LLMを使う場合のみ Secrets Manager 権限を付与する
 - README とデプロイ手順を更新する
 ```
 
@@ -192,6 +207,7 @@ npm run cdk:deploy -- \
 - DynamoDB
 - S3 artifacts
 - Secrets Manager
+- Bedrock invoke permissions
 - SQS
 - CloudWatch alarms
 - Regional WAF for API Gateway

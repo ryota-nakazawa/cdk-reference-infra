@@ -157,6 +157,22 @@ export class GenAiAppStack extends cdk.Stack {
       api: api?.api,
     });
 
+    const frontendSources = [
+      s3deploy.Source.jsonData(
+        'runtime-config.json',
+        {
+          appName: input.appName,
+          appEnv: input.appEnv,
+          region: cdk.Stack.of(this).region,
+          apiEndpoint: '/invoke',
+          apiAuth: manifest.api.auth,
+          userPoolId: auth.userPool.userPoolId,
+          userPoolClientId: auth.userPoolClient.userPoolClientId,
+          identityPoolId: auth.identityPool.attrId,
+        },
+      ),
+    ];
+
     if (manifest.frontend) {
       const frontendOutput = resolveAppPath(
         repoRoot,
@@ -165,8 +181,9 @@ export class GenAiAppStack extends cdk.Stack {
       );
 
       if (fs.existsSync(frontendOutput)) {
+        frontendSources.unshift(s3deploy.Source.asset(frontendOutput));
         new s3deploy.BucketDeployment(this, 'DeployFrontend', {
-          sources: [s3deploy.Source.asset(frontendOutput)],
+          sources: frontendSources,
           destinationBucket: web.bucket,
           distribution: web.distribution,
         });
